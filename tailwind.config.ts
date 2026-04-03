@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"; // v3
 
 export default {
   darkMode: ["class"],
