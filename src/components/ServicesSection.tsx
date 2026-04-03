@@ -1,10 +1,12 @@
-import { Droplets, Zap, Sparkles, Wind, Wrench, Phone } from 'lucide-react';
+import { useState } from 'react';
+import { Droplets, Zap, Sparkles, Wind, Wrench, Phone, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLang } from '@/contexts/LanguageContext';
 
 const PHONE = '+971500000000';
 
 const ServicesSection = () => {
   const { t } = useLang();
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const services = [
     {
@@ -67,6 +69,10 @@ const ServicesSection = () => {
     },
   ];
 
+  const toggleExpand = (title: string) => {
+    setExpanded(prev => prev === title ? null : title);
+  };
+
   return (
     <section id="services" className="section-padding bg-section-alt">
       <div className="container-tight">
@@ -80,35 +86,53 @@ const ServicesSection = () => {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
-            <div
-              key={service.title}
-              className="rounded-xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div className="mb-4 flex items-center gap-3">
-                {service.icon}
-                <h3 className="text-xl font-bold text-foreground">{service.title}</h3>
-              </div>
-              <ul className="mb-5 space-y-3">
-                {service.items.map((item, i) => {
-                  const parts = item.split(' — ');
-                  return (
-                    <li key={i} className="text-sm text-muted-foreground leading-relaxed">
-                      <span className="font-semibold text-foreground">{parts[0]}</span>
-                      {parts[1] && <span> — {parts[1]}</span>}
-                    </li>
-                  );
-                })}
-              </ul>
-              <a
-                href={`tel:${PHONE}`}
-                className="btn-call w-full justify-center py-3 text-base"
+          {services.map((service) => {
+            const isExpanded = expanded === service.title;
+            const visibleItems = isExpanded ? service.items : service.items.slice(0, 3);
+
+            return (
+              <div
+                key={service.title}
+                className="group rounded-xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-accent/40 hover:-translate-y-1"
               >
-                <Phone size={18} />
-                {t('اتصل الآن', 'Call Now')}
-              </a>
-            </div>
-          ))}
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 transition-colors group-hover:bg-accent/20">
+                    {service.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground">{service.title}</h3>
+                </div>
+                <ul className="mb-4 space-y-3">
+                  {visibleItems.map((item, i) => {
+                    const parts = item.split(' — ');
+                    return (
+                      <li key={i} className="text-sm text-muted-foreground leading-relaxed">
+                        <span className="font-semibold text-foreground">{parts[0]}</span>
+                        {parts[1] && <span> — {parts[1]}</span>}
+                      </li>
+                    );
+                  })}
+                </ul>
+                {service.items.length > 3 && (
+                  <button
+                    onClick={() => toggleExpand(service.title)}
+                    className="mb-4 flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent/80"
+                  >
+                    {isExpanded
+                      ? t('عرض أقل', 'Show less')
+                      : t(`عرض الكل (${service.items.length})`, `Show all (${service.items.length})`)}
+                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                )}
+                <a
+                  href={`tel:${PHONE}`}
+                  className="btn-call w-full justify-center py-3 text-base transition-transform active:scale-95"
+                >
+                  <Phone size={18} />
+                  {t('اتصل الآن', 'Call Now')}
+                </a>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

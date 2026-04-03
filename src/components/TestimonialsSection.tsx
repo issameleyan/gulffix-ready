@@ -1,8 +1,10 @@
-import { Star } from 'lucide-react';
+import { useState } from 'react';
+import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { useLang } from '@/contexts/LanguageContext';
 
 const TestimonialsSection = () => {
-  const { t } = useLang();
+  const { t, isRtl } = useLang();
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const reviews = [
     {
@@ -52,6 +54,9 @@ const TestimonialsSection = () => {
     },
   ];
 
+  const next = () => setActiveIndex((prev) => (prev + 1) % reviews.length);
+  const prev = () => setActiveIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+
   return (
     <section id="testimonials" className="section-padding">
       <div className="container-tight">
@@ -60,12 +65,58 @@ const TestimonialsSection = () => {
             {t('عملاءنا يحكوا', 'What Our Clients Say')}
           </h2>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+        {/* Featured testimonial carousel (mobile) */}
+        <div className="mb-8 md:hidden">
+          <div className="relative rounded-xl border border-accent/30 bg-card p-6 shadow-md">
+            <Quote size={24} className="mb-3 text-accent/30" />
+            <div className="mb-3 flex gap-1">
+              {Array.from({ length: reviews[activeIndex].stars }).map((_, si) => (
+                <Star key={si} size={16} className="fill-accent text-accent" />
+              ))}
+            </div>
+            <p className="mb-4 text-sm leading-relaxed text-muted-foreground">"{reviews[activeIndex].text}"</p>
+            <div className="border-t border-border pt-3">
+              <p className="text-sm font-bold text-foreground">{reviews[activeIndex].name}</p>
+              <p className="text-xs text-muted-foreground">{reviews[activeIndex].service}</p>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <button
+              onClick={prev}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card shadow-sm transition-colors hover:bg-muted"
+              aria-label={t('السابق', 'Previous')}
+            >
+              {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </button>
+            <div className="flex gap-2">
+              {reviews.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveIndex(i)}
+                  className={`h-2.5 rounded-full transition-all ${i === activeIndex ? 'w-6 bg-accent' : 'w-2.5 bg-border'}`}
+                  aria-label={`${i + 1}`}
+                />
+              ))}
+            </div>
+            <button
+              onClick={next}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card shadow-sm transition-colors hover:bg-muted"
+              aria-label={t('التالي', 'Next')}
+            >
+              {isRtl ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Grid for desktop */}
+        <div className="hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3">
           {reviews.map((r, i) => (
             <div
               key={i}
-              className="rounded-xl border border-border bg-card p-5 shadow-sm"
+              className="group rounded-xl border border-border bg-card p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-accent/40 hover:-translate-y-1"
             >
+              <Quote size={20} className="mb-2 text-accent/20 transition-colors group-hover:text-accent/40" />
               <div className="mb-3 flex gap-1">
                 {Array.from({ length: r.stars }).map((_, si) => (
                   <Star key={si} size={16} className="fill-accent text-accent" />

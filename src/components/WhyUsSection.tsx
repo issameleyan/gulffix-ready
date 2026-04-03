@@ -1,5 +1,7 @@
-import { Zap, BadgeDollarSign, ShieldCheck, Wrench, Clock, ClipboardCheck } from 'lucide-react';
+import { Zap, BadgeDollarSign, ShieldCheck, Wrench, Clock, ClipboardCheck, Phone } from 'lucide-react';
 import { useLang } from '@/contexts/LanguageContext';
+
+const PHONE = '+971500000000';
 
 const WhyUsSection = () => {
   const { t } = useLang();
@@ -65,15 +67,22 @@ const WhyUsSection = () => {
         </div>
         <div className="grid gap-6 md:grid-cols-2">
           {points.map((p) => (
-            <div key={p.title} className="flex gap-4 rounded-xl border border-border bg-card p-5 shadow-sm">
-              <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10">
+            <a
+              key={p.title}
+              href={`tel:${PHONE}`}
+              className="group flex gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-accent/40 hover:-translate-y-1 cursor-pointer"
+            >
+              <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 transition-colors group-hover:bg-accent/20">
                 {p.icon}
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="text-lg font-bold text-foreground">{p.title}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
               </div>
-            </div>
+              <div className="hidden items-center text-accent opacity-0 transition-opacity group-hover:opacity-100 md:flex">
+                <Phone size={18} />
+              </div>
+            </a>
           ))}
         </div>
       </div>
